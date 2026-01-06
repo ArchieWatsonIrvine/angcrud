@@ -1,25 +1,22 @@
 <main class="main">
   <header class="header">
-    <a href="/" class="logo">Archie CRUD</a>
+    <h1>{{ title() }}</h1>
   </header>
   <section class="content">
     <div class="card-grid">
-      @for (item of itemList; track $index) {
-
-        <div class="scroll-card">
-          <button (click)="deleteItem(item.id)" style="background-color: red;float: inline-end;">Delete</button>
-          <p><strong>Name:</strong> {{ item.name }}</p>
-          <p><strong>Id:</strong> {{ item.id }}</p>
-              <p><strong>Price:</strong> {{ item.price }}</p>
-              <input type="number" 
-                     id="quantity"
-                     formControlName="quantity"
-                     placeholder="{{ item.quantity }}"
-                     #quantityInput/>
-                     <button (click)="updateItemQuantity(quantityInput.value, item.id)">Update Quantity</button>
-        </div>
-      }
+        @for (item of itemList(); track item.ProductUId) {
+          <div class="scroll-card">
+            <button (click)="deleteItem(item.ProductUId)" style="background-color: red;float: inline-end;">Delete</button>
+            <p><strong>Name:</strong> <strong>{{ item.ProductName }}</strong></p>
+            <p><strong>Id:</strong> {{ item.ProductUId }}</p>
+            <p><strong>Product Code:</strong> {{ item.ProductCode }}</p>
+            <p><strong>Description:</strong> {{ item.ProductDescription}}</p>
+            <p><strong>Manufacture Code:</strong> {{ item.ManufactureCode }}</p>
+            <p><strong>Manufacture Name:</strong> {{ item.ManufactureName }}</p>
+            <p><strong>Carton Qty:</strong> {{ item.CartonQty }}</p>
+            <p><strong>Available:</strong> {{ item.Available }}</p>
+          </div>
+        }
     </div>
-    <router-outlet />
   </section>
 </main>

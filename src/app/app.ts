@@ -1,39 +1,116 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, Signal, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RouterOutlet } from '@angular/router';
-import { Items } from './Model/Items';
+import { CRUDService } from './Service/CRUD.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   protected readonly title = signal('CRUD Application');
-  itemList: Items[] = [];
+  itemList = signal<ProductModel[]>([]);
+  crudService = inject(CRUDService);
   
   constructor(){
-    this.populateItems();
-  }
-  populateItems(){
-    this.itemList.push(new Items(1,'Item A',100,2));
-    this.itemList.push(new Items(2,'Item B',150,3));
-    this.itemList.push(new Items(3,'Item C',200,1));
-    this.itemList.push(new Items(4,'Item D',250,5));
+    this.getProducts();
   }
 
-  updateItemQuantity(qty: string, id: number){
+  addProduct(productNoUId: ProductNoUId): void{
+    // Logic to add a new item
+    this.crudService.addProduct(productNoUId).subscribe();
+  }
+
+  addProdcuts(products: ProductNoUId[]): void{
+    // Logic to add multiple items
+    this.crudService.addProducts(products).subscribe();
+  }
+
+  addProductsByQuery(createProductByQueryDTO: CreateProductByQueryDTO): void{
+    // Logic to add a new item by query
+    this.crudService.addProductsByQuery(createProductByQueryDTO).subscribe();
+  }
+
+  getProduct(id: number): void{
+    // Logic to get a single item
+    this.crudService.getProduct(id).subscribe((data:any)=>{
+      this.itemList = data;
+    });
+  }
+
+  async getProducts(){
+    // Logic to get all items
+    await this.crudService.getProducts().then((data:any)=>{
+      this.itemList.set(data);
+    });
+  }
+
+  editProduct(prodcut: ProductModel): void{
     // Find the item by id and update its quantity
-    const item = this.itemList.find(i => i.id === id);
-    if(item){
-      item.quantity = parseInt(qty, 10);
-    }
+    this.crudService.editProduct(prodcut).subscribe();
   }
 
-  deleteItem(id: number){
+  editProducts(products: ProductModel[]): void{
+    // Logic to edit multiple items
+    this.crudService.editProducts(products).subscribe();
+  }
+
+  editProductByQuery(updateProductByQueryDTO: UpdateProductByQueryDTO): void{
+    // Logic to edit an item by query
+    this.crudService.editProductByQuery(updateProductByQueryDTO).subscribe();
+  }
+
+  deleteItem(id: number) : void{
     // Logic to delete an item
-    this.itemList = this.itemList.filter(item => item.id !== id);
+    // this.crudService.removeProduct(id).subscribe(()=>{
+    //   this.itemList = this.itemList.filter(i => i.ProductUId !== id);
+    // });
   }
 }
+
+export type ProductNoUId = {
+    ProductCode: string;
+    ProductName: string;
+    ProductDescription: string;
+    ManufactureCode: string; 
+    ManufactureName: string;
+    ManufactureDescription: string;
+    CartonQty: number;
+    Available: boolean;
+  };
+
+  export type ProductModel = {
+    ProductUId:number;
+    ProductCode:string;
+    ProductName:string;
+    ProductDescription:string;
+    ManufactureCode:string;
+    ManufactureName:string;
+    CartonQty:number;
+    Available:boolean;
+  };
+
+  
+export type UpdateProductByQueryDTO = {
+    ProductCode: string;
+    ProductName: string;
+    ProductDescription: string;
+    ManufactureCode: string; 
+    ManufactureName: string;
+    ManufactureDescription: string;
+    CartonQty: number;
+    Available: boolean;
+  };
+
+  export type CreateProductByQueryDTO = {
+    ProductUId:number;
+    ProductCode:string;
+    ProductName:string;
+    ProductDescription:string;
+    ManufactureCode:string;
+    ManufactureName:string;
+    CartonQty:number;
+    Available:boolean;
+  };
