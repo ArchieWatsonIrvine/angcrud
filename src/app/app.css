@@ -1,215 +1,132 @@
-:root {
-  /* Color Palette - Modern Indigo Theme */
-  --primary-color: #4f46e5;       /* Main action buttons */
-  --primary-hover: #4338ca;
-  --secondary-color: #6b7280;     /* Cancel/Back buttons */
-  --danger-color: #ef4444;        /* Delete actions */
-  --danger-hover: #dc2626;
-  --success-color: #10b981;       /* Success states */
-  --background-color: #f3f4f6;    /* App background */
-  --card-background: #ffffff;     /* Table/Form background */
-  
-  /* Text Colors */
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  
-  /* Spacing & Borders */
-  --border-radius: 8px;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-body {
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-main);
-  margin: 0;
-  padding: 2rem;
-  line-height: 1.5;
-}
-
-/* Common Container */
-.crud-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Header Section */
-.crud-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.crud-header h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin: 0;
-}
-
 .table-container {
-  background: var(--card-background);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-  overflow: hidden; /* Clips corners */
-  overflow-x: auto; /* Responsive scroll */
+  overflow-x: auto; /* Allows scrolling on small screens */
+  margin: 20px 0;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
-.crud-table {
+table {
   width: 100%;
   border-collapse: collapse;
+  font-family: sans-serif;
+  min-width: 600px;
+}
+
+thead {
+  background-color: #006a8d;
+  color: white;
   text-align: left;
 }
 
-.crud-table thead {
-  background-color: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+th, td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #dddddd;
 }
 
-.crud-table th {
-  padding: 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+tr:hover {
+  background-color: #f1f1f1; /* Highlight row on hover */
 }
 
-.crud-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  color: var(--text-main);
-}
-
-.crud-table tr:last-child td {
-  border-bottom: none;
-}
-
-.crud-table tbody tr:hover {
-  background-color: #f9fafb; /* Row highlight on hover */
-}
-
-/* Action column alignment */
-.crud-table td.actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.form-card {
-  background: var(--card-background);
-  padding: 2rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-group label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-main);
-  margin-bottom: 0.5rem;
-}
-
-.form-control {
-  width: 100%;
-  padding: 0.625rem;
-  border: 1px solid #d1d5db;
-  border-radius: var(--border-radius);
-  font-size: 1rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  box-sizing: border-box; /* Ensures padding doesn't break width */
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); /* Soft glow ring */
-}
-
-/* Error State */
-.form-control.is-invalid {
-  border-color: var(--danger-color);
-}
-
-.error-message {
-  color: var(--danger-color);
-  font-size: 0.75rem;
-  margin-top: 0.25rem;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: var(--border-radius);
+.delete-btn {
+  background-color: #ff4d4d;
+  color: white;
   border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #cc0000;
+}
+
+td,
+th {
+  white-space: normal !important; 
+  word-wrap: break-word !important;
+}
+
+td {
+  vertical-align: middle !important;
+}
+
+.qty-input {
+  width: 60px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Add pointer cursor so users know it's clickable */
+.clickable-row {
   cursor: pointer;
   transition: background-color 0.2s;
-  text-decoration: none;
 }
 
-.btn-primary {
-  background-color: var(--primary-color);
+/* Default Hover Effect */
+.clickable-row:hover {
+  background-color: #f5f5f5;
+}
+
+/* Selected State (Wins over hover) */
+.selected-row {
+  background-color: #f5f5f5 !important;  
+   outline: 1px solid #006a8d; 
+}
+
+.selected-row td {
+  color: #000000;
+}
+
+
+/* The dark backdrop behind the modal */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.custom-modal {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  padding: 20px;
+  min-width: 300px;
+  font-family: sans-serif;
+}
+
+.input-group {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-group select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.confirm-btn {
+  background-color: #009879;
   color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.btn-primary:hover {
-  background-color: var(--primary-hover);
-}
-
-.btn-secondary {
-  background-color: white;
-  border: 1px solid #d1d5db;
-  color: var(--text-main);
-}
-
-.btn-secondary:hover {
-  background-color: #f9fafb;
-}
-
-.btn-danger {
-  background-color: var(--danger-color);
-  color: white;
-}
-
-.btn-danger:hover {
-  background-color: var(--danger-hover);
-}
-
-.btn-sm {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-}
-
-.scroll-container {
-  display: flex;           /* Aligns items in a row */
-  overflow-x: auto;        /* Enables horizontal scrolling */
-  gap: 1rem;
-  padding-bottom: 1rem;    /* Space for the scrollbar */
-  
-  /* Smooth scrolling experience */
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-
-.scroll-card {
-  /* Fixed width is important here so they don't squish */
-  min-width: 280px; 
-  
-  background: var(--card-background);
-  box-shadow: var(--shadow-sm);
-  border-radius: var(--border-radius);
-  padding: 1.5rem;
-  border: 1px solid #e5e7eb;
+.cancel-btn {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
 }

@@ -1,6 +1,10 @@
 import { Component, computed, inject, Signal, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CRUDService } from './Service/CRUD.service';
+import { ProductModel } from './Model/Product';
+import { UpdateProductByQueryDTO } from './DTO/UpdateProductByQueryDTO';
+import { CreateProductByQueryDTO } from './DTO/CreateProductByQueryDTO';
+import { ProductNoUId } from './Model/ProductNoUId';
 
 @Component({
   selector: 'app-root',
@@ -13,14 +17,44 @@ export class App {
   protected readonly title = signal('CRUD Application');
   itemList = signal<ProductModel[]>([]);
   crudService = inject(CRUDService);
-  
+  selectedIds = signal(new Set<number>());
+  applyForm = new FormGroup({
+        productName: new FormControl(''),
+        ProductDescription: new FormControl(''),
+        ManufactureCode: new FormControl(''),
+        ManufactureName: new FormControl(''),
+        ManufactureDescription: new FormControl(''),
+        CartonQty: new FormControl(''),
+        Available: new FormControl('')
+      });
+
   constructor(){
     this.getProducts();
   }
 
-  addProduct(productNoUId: ProductNoUId): void{
+  async addProduct(
+    ProductCode:string,
+    ProductName:string,
+    ProductDescription:string,
+    ManufactureCode:string,
+    ManufactureName:string,
+    ManufactureDescription:string,
+    CartonQty:string,
+    Available:string){
     // Logic to add a new item
-    this.crudService.addProduct(productNoUId).subscribe();
+    if(isNaN(Number(CartonQty)) || Number(CartonQty) < 0) return;
+    
+    const productNoUId: ProductNoUId = {
+      Available: Available === 'true',
+      CartonQty: parseInt(CartonQty),
+      ManufactureCode: ManufactureCode,
+      ManufactureDescription: ManufactureDescription,
+      ManufactureName: ManufactureName,
+      ProductCode: ProductCode,
+      ProductDescription: ProductDescription,
+      ProductName: ProductName
+    }
+    await this.crudService.addProduct(productNoUId).then();
   }
 
   addProdcuts(products: ProductNoUId[]): void{
@@ -28,7 +62,7 @@ export class App {
     this.crudService.addProducts(products).subscribe();
   }
 
-  addProductsByQuery(createProductByQueryDTO: CreateProductByQueryDTO): void{
+  addProductsByQuery(createProductByQueryDTO: CreateProductByQueryDTO){
     // Logic to add a new item by query
     this.crudService.addProductsByQuery(createProductByQueryDTO).subscribe();
   }
@@ -47,70 +81,73 @@ export class App {
     });
   }
 
-  editProduct(prodcut: ProductModel): void{
+  async editProduct(product: ProductModel, newQuantity: string){
     // Find the item by id and update its quantity
-    this.crudService.editProduct(prodcut).subscribe();
+    product.cartonQty = parseInt(newQuantity);
+    await this.crudService.editProduct(product).then();
   }
 
-  editProducts(products: ProductModel[]): void{
+  async editProducts(valueStr: string, dialog: HTMLDialogElement){
     // Logic to edit multiple items
-    this.crudService.editProducts(products).subscribe();
+    const filteredItems = this.itemList().filter(item => this.selectedIds().has(item.productUId))
+    const isAvailable = valueStr === 'true';
+    console.log("Hello")
+    if(filteredItems.length === 0)return;
+
+    const payload = filteredItems.map(item => ({
+      productUId: item.productUId,
+      cartonQty: item.cartonQty,
+      manufactureDescription: item.manufactureDescription,
+      manufactureName: item.manufactureName,
+      productCode: item.productCode,
+      productDescription: item.productDescription,
+      productName: item.productName,
+      manufactureCode: item.manufactureCode,
+      available: isAvailable
+    }));
+
+    try{
+      await this.crudService.editProducts(payload).then();
+    } catch(err){
+      console.error(err)
+    }
   }
 
-  editProductByQuery(updateProductByQueryDTO: UpdateProductByQueryDTO): void{
+  async editProductByQuery(updateProductByQueryDTO: UpdateProductByQueryDTO){
     // Logic to edit an item by query
-    this.crudService.editProductByQuery(updateProductByQueryDTO).subscribe();
+    await this.crudService.editProductByQuery(updateProductByQueryDTO).then();
   }
 
-  deleteItem(id: number) : void{
-    // Logic to delete an item
-    // this.crudService.removeProduct(id).subscribe(()=>{
-    //   this.itemList = this.itemList.filter(i => i.ProductUId !== id);
-    // });
+  async deleteItem(id: number){
+    console.log("Delete item with id:", id);
+    await this.crudService.removeProduct(id).then();
   }
+
+  searchItems(query: string): void {
+    // Logic to search items
+    this.itemList.set(this.itemList().filter(item => 
+      item.productName.toLowerCase().includes(query.toLowerCase()) ||
+      item.productDescription.toLowerCase().includes(query.toLowerCase())
+    ));
+  }
+
+  editProductQuantity(id: number, newQuantity: number): void {
+    // Logic to edit product quantity
+    const product = this.itemList().find(item => item.productUId === id);
+    console.log(product);
+  }
+
+  // Inside ProductListComponent
+
+toggleRow(uid: number) {
+  this.selectedIds.update(currentSet => {
+    const newSet = new Set(currentSet);
+    if (newSet.has(uid)) {
+      newSet.delete(uid); // If selected, deselect it
+    } else {
+      newSet.add(uid);    // If not selected, select it
+    }
+    return newSet;
+  });
 }
-
-export type ProductNoUId = {
-    ProductCode: string;
-    ProductName: string;
-    ProductDescription: string;
-    ManufactureCode: string; 
-    ManufactureName: string;
-    ManufactureDescription: string;
-    CartonQty: number;
-    Available: boolean;
-  };
-
-  export type ProductModel = {
-    ProductUId:number;
-    ProductCode:string;
-    ProductName:string;
-    ProductDescription:string;
-    ManufactureCode:string;
-    ManufactureName:string;
-    CartonQty:number;
-    Available:boolean;
-  };
-
-  
-export type UpdateProductByQueryDTO = {
-    ProductCode: string;
-    ProductName: string;
-    ProductDescription: string;
-    ManufactureCode: string; 
-    ManufactureName: string;
-    ManufactureDescription: string;
-    CartonQty: number;
-    Available: boolean;
-  };
-
-  export type CreateProductByQueryDTO = {
-    ProductUId:number;
-    ProductCode:string;
-    ProductName:string;
-    ProductDescription:string;
-    ManufactureCode:string;
-    ManufactureName:string;
-    CartonQty:number;
-    Available:boolean;
-  };
+}
