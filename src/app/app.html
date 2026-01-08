@@ -5,6 +5,7 @@
       <input type="text" (input)="searchItems($event.target.value)" placeholder="Search items..." #filter>
       <button (click)="searchItems(filter.value)">Refresh</button>
       <button (click)="addDialog.showModal()" style="float: inline-end;">Add Product</button>
+      <button (click)="bulkaddDialog.showModal()" style="float: inline-end;">Bulk Add Product</button>
     </section>
   </header>
   <section class="content">
@@ -105,6 +106,61 @@
         
         <button 
           (click)="addProduct(ProductCode.value, ProductName.value, ProductDescription.value, ManufactureCode.value, ManufactureName.value, ManufactureDescription.value, CartonQty.value, statusInput.value)" 
+          (click)="addDialog.close()"
+          class="confirm-btn">
+          Add
+        </button>
+      </div>
+    </dialog>
+
+    <dialog #bulkaddDialog class="custom-modal">
+      <h3>Bulk Add item</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Product UId</th>
+            <th>Product Code</th>
+            <th>Product Description</th>
+            <th>Manufacture Code</th>
+            <th>Manufacture Name</th>
+            <th>Manufacture Description</th>
+            <th>Carton Qty</th>
+            <th>Available</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of newItemsList(); track $index) {
+            <tr>
+              <td><input (input)="updatePopupField($index, 'ProductName', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ProductUId', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ProductCode', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ProductDescription', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ManufactureCode', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ManufactureName', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ManufactureDescription', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'CartonQty', $any($event.target).value)" type="number" value="1" class="qty-input"/></td>
+              <td><select (select)="updatePopupField($index, 'Available', $any($event.target).value)"> 
+                <option value="true">True (Available)</option>
+                <option value="false">False (Unavailable)</option>
+              </select></td>
+              <td>
+                 <button (click)="removeLineFromPopup($index)" style="background-color: red;float: inline-end;">Delete</button>
+              </td>
+            </tr>
+          }
+          </tbody>
+       </table>
+     <div class="modal-actions" style="float: inline-start;">
+        <button 
+        class="cancel-btn"
+        (click)="addLineToPopup()">+</button>
+      </div>
+      <div class="modal-actions">
+        <button (click)="addDialog.close()" class="cancel-btn">Cancel</button>
+        <button 
+          (click)="addProducts(bulkaddDialog)" 
           (click)="addDialog.close()"
           class="confirm-btn">
           Add

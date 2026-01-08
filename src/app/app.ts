@@ -18,15 +18,7 @@ export class App {
   itemList = signal<ProductModel[]>([]);
   crudService = inject(CRUDService);
   selectedIds = signal(new Set<number>());
-  applyForm = new FormGroup({
-        productName: new FormControl(''),
-        ProductDescription: new FormControl(''),
-        ManufactureCode: new FormControl(''),
-        ManufactureName: new FormControl(''),
-        ManufactureDescription: new FormControl(''),
-        CartonQty: new FormControl(''),
-        Available: new FormControl('')
-      });
+  newItemsList = signal<any[]>([]);
 
   constructor(){
     this.getProducts();
@@ -57,9 +49,59 @@ export class App {
     await this.crudService.addProduct(productNoUId).then();
   }
 
-  addProdcuts(products: ProductNoUId[]): void{
+  openBulkAddModal(dialog: HTMLDialogElement) {
+    this.newItemsList.set([this.newEmptyRow()]); 
+    dialog.showModal();
+  }
+
+  newEmptyRow() {
+    return {
+      ProductName: '',
+      ProductCode: '',
+      CartonQty: 0,
+      Available: true
+    };
+  }
+
+  addLineToPopup() {
+    this.newItemsList.update(list => [...list, this.newEmptyRow()]);
+  }
+
+  removeLineFromPopup(index: number) {
+    this.newItemsList.update(list => list.filter((_, i) => i !== index));
+  }
+
+  updatePopupField(index: number, field: string, value: any) {
+    this.newItemsList.update(list => {
+      const updated: ProductNoUId[] = [...list];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  }
+
+  async addProducts(dialog: HTMLDialogElement){
     // Logic to add multiple items
-    this.crudService.addProducts(products).subscribe();
+
+    const itemsToSave = this.newItemsList();
+
+    console.log(itemsToSave);
+    // Basic Validation
+    if (itemsToSave.some(x => !x.ProductName)) {
+      alert('All items must have a Name.');
+      return;
+    }
+
+    try {
+      this.crudService.addProducts(itemsToSave).then()
+
+      this.getProducts(); // Refresh main table
+      dialog.close();
+      this.newItemsList.set([]); // Clear memory
+      
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save items.');
+    }
   }
 
   addProductsByQuery(createProductByQueryDTO: CreateProductByQueryDTO){
@@ -91,7 +133,6 @@ export class App {
     // Logic to edit multiple items
     const filteredItems = this.itemList().filter(item => this.selectedIds().has(item.productUId))
     const isAvailable = valueStr === 'true';
-    console.log("Hello")
     if(filteredItems.length === 0)return;
 
     const payload = filteredItems.map(item => ({

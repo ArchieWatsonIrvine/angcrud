@@ -23,8 +23,8 @@ export class CRUDService implements OnInit {
     }
 
     //Post(add-products)
-    addProducts(ListProductNoUId: ProductNoUId[]) {
-            return this.http.post(`${this.apiUrl}/add-products`, ListProductNoUId);
+    async addProducts(ListProductNoUId: ProductNoUId[]) {
+            return await firstValueFrom(this.http.post(`${this.apiUrl}/add-products`, ListProductNoUId));
         }
 
     //HttpPost("add-product-by-query")
@@ -54,7 +54,7 @@ export class CRUDService implements OnInit {
 
     //HttpPut("edit-product-by-query")
     async editProductByQuery(updateProductByQueryDTO: UpdateProductByQueryDTO) {
-        return await firstValueFrom(this.http.put(`${this.apiUrl}/edit-product-by-query`, updateProductByQueryDTO));
+        return await firstValueFrom(this.http.put(`${this.apiUrl}/edit-product-by-query?`, updateProductByQueryDTO));
     }
 
     //HttpDelete("remove-product")
