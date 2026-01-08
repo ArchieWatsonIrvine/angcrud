@@ -1,25 +1,172 @@
 <main class="main">
   <header class="header">
-    <a href="/" class="logo">Archie CRUD</a>
+    <h1>{{ title() }}</h1>
+    <section>
+      <input type="text" (input)="searchItems($event.target.value)" placeholder="Search items..." #filter>
+      <button (click)="searchItems(filter.value)">Refresh</button>
+      <button (click)="addDialog.showModal()" style="float: inline-end;">Add Product</button>
+      <button (click)="bulkaddDialog.showModal()" style="float: inline-end;">Bulk Add Product</button>
+    </section>
   </header>
   <section class="content">
-    <div class="card-grid">
-      @for (item of itemList; track $index) {
-
-        <div class="scroll-card">
-          <button (click)="deleteItem(item.id)" style="background-color: red;float: inline-end;">Delete</button>
-          <p><strong>Name:</strong> {{ item.name }}</p>
-          <p><strong>Id:</strong> {{ item.id }}</p>
-              <p><strong>Price:</strong> {{ item.price }}</p>
-              <input type="number" 
-                     id="quantity"
-                     formControlName="quantity"
-                     placeholder="{{ item.quantity }}"
-                     #quantityInput/>
-                     <button (click)="updateItemQuantity(quantityInput.value, item.id)">Update Quantity</button>
-        </div>
-      }
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Product UId</th>
+            <th>Product Code</th>
+            <th>Product Description</th>
+            <th>Manufacture Code</th>
+            <th>Manufacture Name</th>
+            <th>Carton Qty</th>
+            <th>Available</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+            @for (item of itemList(); track $index) {
+              <tr (click)="toggleRow(item.productUId)" 
+                  [class.selected-row]="selectedIds().has(item.productUId)"
+                  class="clickable-row">
+                <td>{{ item.productName }}</td>
+                <td>{{ item.productUId }}</td>
+                <td>{{ item.productCode }}</td>
+                <td>{{ item.productDescription}}</td>
+                <td>{{ item.manufactureCode }}</td>
+                <td>{{ item.manufactureName }}</td>
+                <td><input type="number" #qty [value]="item.cartonQty" (change)="editProduct(item, qty.value)" class="qty-input"/></td>
+                <td>{{ item.available }}</td>
+                <td>
+                    <button (click)="editProduct(item, qty.value)" style="background-color: transparent;float: inline-end;">Edit</button>
+                    <button (click)="deleteItem(item.productUId)" style="background-color: red;float: inline-end;">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+       </table>
+       
+       @if (selectedIds().size > 0) {
+    <div class="bulk-actions">
+      <span>{{ selectedIds().size }} items selected</span>
+      <button style="float: inline-end; margin: 5px;" (click)="availDialog.showModal()">Bulk Edit</button>
     </div>
-    <router-outlet />
+}
+
+    <dialog #availDialog class="custom-modal">
+      <h3>Update Availability</h3>
+      <p>Set availability for <strong>{{ selectedIds().size }}</strong> items:</p>
+      
+      <div class="input-group">
+        <label>Status:</label>
+        <select #statusInput>
+          <option value="true">True (Available)</option>
+          <option value="false">False (Unavailable)</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button (click)="availDialog.close()" class="cancel-btn">Cancel</button>
+        
+        <button 
+          (click)="editProducts(statusInput.value, availDialog)" 
+          class="confirm-btn">
+          Confirm
+        </button>
+      </div>
+    </dialog>
+
+    <dialog #addDialog class="custom-modal">
+      <h3>Add item</h3>
+
+      <div class="input-group">
+        <label>ProductCode:</label>
+        <input class="qty-input" style="width: auto;" #ProductCode />
+        <label>ProductName:</label>
+        <input class="qty-input" style="width: auto;" #ProductName />
+        <label>ProductDescription:</label>
+        <input class="qty-input" style="width: auto;" #ProductDescription />
+        <label>ManufactureCode:</label>
+        <input class="qty-input" style="width: auto;" #ManufactureCode />
+        <label>ManufactureName:</label>
+        <input class="qty-input" style="width: auto;" #ManufactureName />
+        <label>ManufactureDescription:</label>
+        <input class="qty-input" style="width: auto;" #ManufactureDescription />
+        <label>CartonQty:</label>
+        <input type="number" class="qty-input" style="width: auto;" #CartonQty />
+        <label>Available:</label>
+        <select #statusInput>
+          <option value="true">True (Available)</option>
+          <option value="false">False (Unavailable)</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button (click)="addDialog.close()" class="cancel-btn">Cancel</button>
+        
+        <button 
+          (click)="addProduct(ProductCode.value, ProductName.value, ProductDescription.value, ManufactureCode.value, ManufactureName.value, ManufactureDescription.value, CartonQty.value, statusInput.value)" 
+          (click)="addDialog.close()"
+          class="confirm-btn">
+          Add
+        </button>
+      </div>
+    </dialog>
+
+    <dialog #bulkaddDialog class="custom-modal">
+      <h3>Bulk Add item</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Product UId</th>
+            <th>Product Code</th>
+            <th>Product Description</th>
+            <th>Manufacture Code</th>
+            <th>Manufacture Name</th>
+            <th>Manufacture Description</th>
+            <th>Carton Qty</th>
+            <th>Available</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of newItemsList(); track $index) {
+            <tr>
+              <td><input (input)="updatePopupField($index, 'ProductName', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ProductUId', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ProductCode', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ProductDescription', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ManufactureCode', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ManufactureName', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'ManufactureDescription', $any($event.target).value)" type="text" class="qty-input"/></td>
+              <td><input (input)="updatePopupField($index, 'CartonQty', $any($event.target).value)" type="number" value="1" class="qty-input"/></td>
+              <td><select (select)="updatePopupField($index, 'Available', $any($event.target).value)"> 
+                <option value="true">True (Available)</option>
+                <option value="false">False (Unavailable)</option>
+              </select></td>
+              <td>
+                 <button (click)="removeLineFromPopup($index)" style="background-color: red;float: inline-end;">Delete</button>
+              </td>
+            </tr>
+          }
+          </tbody>
+       </table>
+     <div class="modal-actions" style="float: inline-start;">
+        <button 
+        class="cancel-btn"
+        (click)="addLineToPopup()">+</button>
+      </div>
+      <div class="modal-actions">
+        <button (click)="addDialog.close()" class="cancel-btn">Cancel</button>
+        <button 
+          (click)="addProducts(bulkaddDialog)" 
+          (click)="addDialog.close()"
+          class="confirm-btn">
+          Add
+        </button>
+      </div>
+    </dialog>
+      </div>
   </section>
 </main>
