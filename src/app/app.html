@@ -1,11 +1,10 @@
 <main class="main">
   <header class="header">
-    <h1>{{ title() }}</h1>
     <section>
-      <input type="text" (input)="searchItems($event.target.value)" placeholder="Search items..." #filter>
-      <button (click)="searchItems(filter.value)">Refresh</button>
-      <button (click)="addDialog.showModal()" style="float: inline-end;">Add Product</button>
-      <button (click)="bulkaddDialog.showModal()" style="float: inline-end;">Bulk Add Product</button>
+      <input type="text" (input)="searchItems($event.target.value)" placeholder="Search items..." #filter class="search-box">
+      <button (click)="searchItems(filter.value)" style="margin: 5px" class="search-btn">Refresh</button>
+      <button (click)="addDialog.showModal()" style="float: inline-end; margin: 5px" class="search-btn">Add Product</button>
+      <button (click)="bulkaddDialog.showModal()" style="float: inline-end; margin: 5px;" class="search-btn">Bulk Add Product</button>
     </section>
   </header>
   <section class="content">
@@ -37,9 +36,9 @@
                 <td>{{ item.manufactureName }}</td>
                 <td><input type="number" #qty [value]="item.cartonQty" (change)="editProduct(item, qty.value)" class="qty-input"/></td>
                 <td>{{ item.available }}</td>
-                <td>
-                    <button (click)="editProduct(item, qty.value)" style="background-color: transparent;float: inline-end;">Edit</button>
-                    <button (click)="deleteItem(item.productUId)" style="background-color: red;float: inline-end;">Delete</button>
+                <td style="padding: 0; margin: 0;">
+                    <button (click)="editProduct(item, qty.value)" style="float: inline-end;" class="confirm-btn">Edit</button>
+                    <button (click)="deleteItem(item.productUId)" class="delete-btn">Delete</button>
                 </td>
               </tr>
             }
@@ -48,8 +47,7 @@
        
        @if (selectedIds().size > 0) {
     <div class="bulk-actions">
-      <span>{{ selectedIds().size }} items selected</span>
-      <button style="float: inline-end; margin: 5px;" (click)="availDialog.showModal()">Bulk Edit</button>
+       <button style="float: inline-end; margin: 5px;" class="search-btn" (click)="availDialog.showModal()">Bulk Edit</button>
     </div>
 }
 

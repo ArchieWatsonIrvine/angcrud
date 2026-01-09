@@ -1,6 +1,6 @@
 .table-container {
   overflow-x: auto; /* Allows scrolling on small screens */
-  margin: 20px 0;
+  margin: 20px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
@@ -23,15 +23,13 @@ th, td {
   border-bottom: 1px solid #dddddd;
 }
 
-tr:hover {
-  background-color: #f1f1f1; /* Highlight row on hover */
-}
-
 .delete-btn {
   background-color: #ff4d4d;
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 8px 16px;
+  margin: 5px;
+  float: inline-end;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -61,6 +59,7 @@ td {
 .clickable-row {
   cursor: pointer;
   transition: background-color 0.2s;
+  background: #ffffff ;
 }
 
 /* Default Hover Effect */
@@ -77,7 +76,6 @@ td {
 .selected-row td {
   color: #000000;
 }
-
 
 /* The dark backdrop behind the modal */
 dialog::backdrop {
@@ -119,11 +117,29 @@ dialog::backdrop {
   color: white;
   border: none;
   padding: 8px 16px;
+  margin: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-btn {
+  background-color: #006a8d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .cancel-btn {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-box{
   background-color: transparent;
   border: 1px solid #ccc;
   padding: 8px 16px;

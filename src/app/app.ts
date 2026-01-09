@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal, signal } from '@angular/core';
+import { Component, computed, inject, Query, Signal, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CRUDService } from './Service/CRUD.service';
 import { ProductModel } from './Model/Product';
@@ -166,6 +166,12 @@ export class App {
 
   searchItems(query: string): void {
     // Logic to search items
+    // refresh list 
+    if(!query){
+      this.getProducts();
+      return;
+    }
+
     this.itemList.set(this.itemList().filter(item => 
       item.productName.toLowerCase().includes(query.toLowerCase()) ||
       item.productDescription.toLowerCase().includes(query.toLowerCase())
@@ -180,15 +186,15 @@ export class App {
 
   // Inside ProductListComponent
 
-toggleRow(uid: number) {
-  this.selectedIds.update(currentSet => {
-    const newSet = new Set(currentSet);
-    if (newSet.has(uid)) {
-      newSet.delete(uid); // If selected, deselect it
-    } else {
-      newSet.add(uid);    // If not selected, select it
-    }
-    return newSet;
-  });
-}
+  toggleRow(uid: number) {
+    this.selectedIds.update(currentSet => {
+      const newSet = new Set(currentSet);
+      if (newSet.has(uid)) {
+        newSet.delete(uid); // If selected, deselect it
+      } else {
+        newSet.add(uid);    // If not selected, select it
+      }
+      return newSet;
+    });
+  }
 }
